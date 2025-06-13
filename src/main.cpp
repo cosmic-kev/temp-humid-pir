@@ -1,5 +1,6 @@
 /*
-Default within this comment
+// Default within this comment
+
 #include <Arduino.h>
 
 // put function declarations here:
@@ -28,7 +29,8 @@ void setup() {
 
 void loop() {
   digitalWrite(LED_BUILTIN, HIGH);  // LED on
-  delay(5000);                       // 0.5 s
+  delay(5000);                       // 1 s
   digitalWrite(LED_BUILTIN, LOW);   // LED off
   delay(5000);
 }
+
