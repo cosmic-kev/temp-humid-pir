@@ -1,36 +1,41 @@
 /*
-// Default within this comment
-
-#include <Arduino.h>
-
-// put function declarations here:
-int myFunction(int, int);
-
-void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
-}
-
-void loop() {
-  // put your main code here, to run repeatedly:
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
-}
+Kevin Dillon
+cosmic.kev.606@gmail.com
+-------------------------
+Project using Arduino Uno R3 to monitor temperature, humidity, and motion
+Component list:
+-- Arduino Uno R3
+-- W5500
+-- SR501 
+-- DHT22
 */
 
 #include <Arduino.h>
+#include <DHT.h>
 
+#define DHTPIN 2
+#define DHTTYPE DHT22
+
+DHT dht(DHTPIN, DHTTYPE); // create global DHT object
+
+// setup runs once after reset
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);   // LED on pin 13
+  Serial.begin(115200); // initializes UART at 115200 baud
+  Serial.println(F("DHT22 smoke test")); // F macro stores string literals in flash (PROGMEM) instead of scarce 2 KB SRAM
+  dht.begin(); // sets pinMode + timers
 }
 
+// loop runs forever
 void loop() {
-  digitalWrite(LED_BUILTIN, HIGH);  // LED on
-  delay(5000);                       // 1 s
-  digitalWrite(LED_BUILTIN, LOW);   // LED off
-  delay(5000);
-}
+  // calls initiate a start-signal pulse, wait ~1ms for a 40 bit reply, then parse it
+  float humidityValue = dht.readHumidity();
+  float tempValue = dht.readTemperature(true); // true bool returns temp in Fahrenheit
 
+  if (isnan(humidityValue) || isnan(tempValue)) {
+    Serial.println(F("Sensor read failed"));
+  } else {
+    Serial.print(F("Humidity: ")); Serial.print(humidityValue); Serial.print(F("%  |  "));
+    Serial.print(F("Temp: ")); Serial.print(tempValue); Serial.println(" °F");
+  }
+  delay(2000); // DHT22 needs >= 2s between reads
+}
